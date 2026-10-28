@@ -1,0 +1,478 @@
+[
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f0ffd"
+    },
+    "destination": "Paris, France",
+    "description": "The City of Light at its most romantic: a boutique hotel in Saint-Germain, a private Seine dinner cruise and early-entry access to the Louvre before the crowds arrive.",
+    "startDate": {
+      "$date": {
+        "$numberLong": "1787788800000"
+      }
+    },
+    "endDate": {
+      "$date": {
+        "$numberLong": "1788220800000"
+      }
+    },
+    "price": {
+      "$numberInt": "2450"
+    },
+    "imageName": "seed-paris.jpg",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447424"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447424"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f0ffe"
+    },
+    "destination": "Marrakech, Morocco",
+    "description": "Stay in a restored riad in the medina, wander the souks with a local guide, and spend a night under the stars at a desert camp in the Agafay foothills.",
+    "startDate": {
+      "$date": {
+        "$numberLong": "1789862400000"
+      }
+    },
+    "endDate": {
+      "$date": {
+        "$numberLong": "1790380800000"
+      }
+    },
+    "price": {
+      "$numberInt": "1890"
+    },
+    "imageName": "seed-marrakech.jpg",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447429"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447429"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f0fff"
+    },
+    "destination": "Bali, Indonesia",
+    "description": "A private pool villa above the Ubud rice terraces, sunrise at Mount Batur, Balinese cooking classes and an afternoon at the Tirta Empul water temple.",
+    "startDate": {
+      "$date": {
+        "$numberLong": "1792886400000"
+      }
+    },
+    "endDate": {
+      "$date": {
+        "$numberLong": "1793664000000"
+      }
+    },
+    "price": {
+      "$numberInt": "2180"
+    },
+    "imageName": "seed-bali.jpg",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447431"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447431"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1000"
+    },
+    "destination": "Dubai, United Arab Emirates",
+    "description": "Skyline suites in Downtown Dubai, a dune safari with dinner in the desert, and the view from the 148th floor of the Burj Khalifa at golden hour.",
+    "startDate": {
+      "$date": {
+        "$numberLong": "1793059200000"
+      }
+    },
+    "endDate": {
+      "$date": {
+        "$numberLong": "1793491200000"
+      }
+    },
+    "price": {
+      "$numberInt": "3150"
+    },
+    "imageName": "seed-dubai.jpg",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447434"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447434"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1001"
+    },
+    "destination": "Santorini, Greece",
+    "description": "Whitewashed cave suites in Oia overlooking the caldera, a catamaran cruise to the hot springs and long sunset dinners above the Aegean Sea.",
+    "startDate": {
+      "$date": {
+        "$numberLong": "1794182400000"
+      }
+    },
+    "endDate": {
+      "$date": {
+        "$numberLong": "1794787200000"
+      }
+    },
+    "price": {
+      "$numberInt": "2890"
+    },
+    "imageName": "seed-santorini.jpg",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447436"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447436"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1002"
+    },
+    "destination": "Kyoto, Japan",
+    "description": "Japan's old imperial capital: a traditional ryokan with kaiseki dining, a private tea ceremony, and quiet early mornings at Fushimi Inari and Higashiyama.",
+    "startDate": {
+      "$date": {
+        "$numberLong": "1794787200000"
+      }
+    },
+    "endDate": {
+      "$date": {
+        "$numberLong": "1795478400000"
+      }
+    },
+    "price": {
+      "$numberInt": "3640"
+    },
+    "imageName": "seed-kyoto.jpg",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447438"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447438"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1003"
+    },
+    "destination": "Amalfi Coast, Italy",
+    "description": "Cliffside hotel in Positano, a private boat day to Capri, limoncello tasting in Amalfi and the Path of the Gods hike above the Mediterranean.",
+    "startDate": {
+      "$date": {
+        "$numberLong": "1795996800000"
+      }
+    },
+    "endDate": {
+      "$date": {
+        "$numberLong": "1796601600000"
+      }
+    },
+    "price": {
+      "$numberInt": "3290"
+    },
+    "imageName": "seed-amalfi.jpg",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447441"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447441"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1004"
+    },
+    "destination": "Reykjavik, Iceland",
+    "description": "Northern lights hunting in season, the Golden Circle by super-jeep, a soak in the Sky Lagoon, and the waterfalls and black-sand beaches of the south coast.",
+    "startDate": {
+      "$date": {
+        "$numberLong": "1797120000000"
+      }
+    },
+    "endDate": {
+      "$date": {
+        "$numberLong": "1797552000000"
+      }
+    },
+    "price": {
+      "$numberInt": "2390"
+    },
+    "imageName": "seed-iceland.jpg",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447443"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447443"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1005"
+    },
+    "destination": "Maldives",
+    "description": "An overwater villa with a private deck and lagoon access, house-reef snorkelling with manta rays, and a sandbank picnic on an uninhabited island.",
+    "startDate": {
+      "$date": {
+        "$numberLong": "1798156800000"
+      }
+    },
+    "endDate": {
+      "$date": {
+        "$numberLong": "1798761600000"
+      }
+    },
+    "price": {
+      "$numberInt": "6950"
+    },
+    "imageName": "seed-maldives.jpg",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447445"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447445"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1006"
+    },
+    "destination": "Banff, Canada",
+    "description": "Lakeside lodge stays at Lake Louise and Moraine Lake, a canoe at sunrise, the Icefields Parkway road trip and soaking in the Banff Upper Hot Springs.",
+    "startDate": {
+      "$date": {
+        "$numberLong": "1799539200000"
+      }
+    },
+    "endDate": {
+      "$date": {
+        "$numberLong": "1800057600000"
+      }
+    },
+    "price": {
+      "$numberInt": "2740"
+    },
+    "imageName": "seed-banff.jpg",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447447"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447447"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1007"
+    },
+    "destination": "Cape Town, South Africa",
+    "description": "Table Mountain at sunset, the Cape Winelands, penguins at Boulders Beach and a drive along Chapman's Peak to the Cape of Good Hope.",
+    "startDate": {
+      "$date": {
+        "$numberLong": "1800921600000"
+      }
+    },
+    "endDate": {
+      "$date": {
+        "$numberLong": "1801612800000"
+      }
+    },
+    "price": {
+      "$numberInt": "2560"
+    },
+    "imageName": "seed-cape-town.jpg",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447450"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447450"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1008"
+    },
+    "destination": "Machu Picchu, Peru",
+    "description": "Cusco and the Sacred Valley, the Vistadome train along the Urubamba River, and a guided sunrise visit to the Inca citadel of Machu Picchu.",
+    "startDate": {
+      "$date": {
+        "$numberLong": "1802476800000"
+      }
+    },
+    "endDate": {
+      "$date": {
+        "$numberLong": "1803081600000"
+      }
+    },
+    "price": {
+      "$numberInt": "2980"
+    },
+    "imageName": "seed-machu-picchu.jpg",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447452"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447452"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1009"
+    },
+    "destination": "New York City, United States",
+    "description": "A design hotel in SoHo, Broadway orchestra seats, a helicopter tour over Manhattan and sunset views from the Top of the Rock.",
+    "startDate": {
+      "$date": {
+        "$numberLong": "1804032000000"
+      }
+    },
+    "endDate": {
+      "$date": {
+        "$numberLong": "1804464000000"
+      }
+    },
+    "price": {
+      "$numberInt": "2650"
+    },
+    "imageName": "seed-new-york.jpg",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447454"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447454"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f100a"
+    },
+    "destination": "Auckland, New Zealand",
+    "description": "The City of Sails by yacht, wine tasting on Waiheke Island, black-sand beaches at Piha and a day trip to the geothermal wonders of Rotorua.",
+    "startDate": {
+      "$date": {
+        "$numberLong": "1806105600000"
+      }
+    },
+    "endDate": {
+      "$date": {
+        "$numberLong": "1806883200000"
+      }
+    },
+    "price": {
+      "$numberInt": "4380"
+    },
+    "imageName": "seed-auckland.jpg",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447457"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447457"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  }
+]

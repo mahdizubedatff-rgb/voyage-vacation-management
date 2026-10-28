@@ -1,0 +1,140 @@
+[
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f100b"
+    },
+    "firstName": "Ameer",
+    "lastName": "Zubedat",
+    "email": "admin@voyage.dev",
+    "password": "$2b$10$RDxyiNXtffzEwoimujpWaO/1OD31kJlXSZdZmmOqFjrBRaJA5aD9a",
+    "role": "ADMIN",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447579"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447579"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f100c"
+    },
+    "firstName": "Maya",
+    "lastName": "Cohen",
+    "email": "user@voyage.dev",
+    "password": "$2b$10$.MO1ilxXBzXJJGUUPzD0quvl6W02/oim19dNOj2fyaUlzYaxPwyua",
+    "role": "USER",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447581"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447581"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1010"
+    },
+    "firstName": "Daniel",
+    "lastName": "Levi",
+    "email": "daniel@voyage.dev",
+    "password": "$2b$10$.MO1ilxXBzXJJGUUPzD0quvl6W02/oim19dNOj2fyaUlzYaxPwyua",
+    "role": "USER",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447586"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447586"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1016"
+    },
+    "firstName": "Noa",
+    "lastName": "Haddad",
+    "email": "noa@voyage.dev",
+    "password": "$2b$10$.MO1ilxXBzXJJGUUPzD0quvl6W02/oim19dNOj2fyaUlzYaxPwyua",
+    "role": "USER",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447592"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447592"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f101c"
+    },
+    "firstName": "Omar",
+    "lastName": "Khalil",
+    "email": "omar@voyage.dev",
+    "password": "$2b$10$.MO1ilxXBzXJJGUUPzD0quvl6W02/oim19dNOj2fyaUlzYaxPwyua",
+    "role": "USER",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447598"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447598"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1022"
+    },
+    "firstName": "Lior",
+    "lastName": "Mizrahi",
+    "email": "lior@voyage.dev",
+    "password": "$2b$10$.MO1ilxXBzXJJGUUPzD0quvl6W02/oim19dNOj2fyaUlzYaxPwyua",
+    "role": "USER",
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447605"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447605"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  }
+]

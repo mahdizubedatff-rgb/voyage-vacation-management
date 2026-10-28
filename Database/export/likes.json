@@ -1,0 +1,554 @@
+[
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f100d"
+    },
+    "userId": {
+      "$oid": "6ae2578fc4528493735f100c"
+    },
+    "vacationId": {
+      "$oid": "6ae2578fc4528493735f1001"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447582"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447582"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f100e"
+    },
+    "userId": {
+      "$oid": "6ae2578fc4528493735f100c"
+    },
+    "vacationId": {
+      "$oid": "6ae2578fc4528493735f1002"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447583"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447583"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f100f"
+    },
+    "userId": {
+      "$oid": "6ae2578fc4528493735f100c"
+    },
+    "vacationId": {
+      "$oid": "6ae2578fc4528493735f1005"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447585"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447585"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1011"
+    },
+    "userId": {
+      "$oid": "6ae2578fc4528493735f1010"
+    },
+    "vacationId": {
+      "$oid": "6ae2578fc4528493735f0ffd"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447587"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447587"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1012"
+    },
+    "userId": {
+      "$oid": "6ae2578fc4528493735f1010"
+    },
+    "vacationId": {
+      "$oid": "6ae2578fc4528493735f1001"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447588"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447588"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1013"
+    },
+    "userId": {
+      "$oid": "6ae2578fc4528493735f1010"
+    },
+    "vacationId": {
+      "$oid": "6ae2578fc4528493735f1003"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447589"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447589"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1014"
+    },
+    "userId": {
+      "$oid": "6ae2578fc4528493735f1010"
+    },
+    "vacationId": {
+      "$oid": "6ae2578fc4528493735f1005"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447589"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447589"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1015"
+    },
+    "userId": {
+      "$oid": "6ae2578fc4528493735f1010"
+    },
+    "vacationId": {
+      "$oid": "6ae2578fc4528493735f1008"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447591"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447591"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1017"
+    },
+    "userId": {
+      "$oid": "6ae2578fc4528493735f1016"
+    },
+    "vacationId": {
+      "$oid": "6ae2578fc4528493735f0fff"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447593"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447593"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1018"
+    },
+    "userId": {
+      "$oid": "6ae2578fc4528493735f1016"
+    },
+    "vacationId": {
+      "$oid": "6ae2578fc4528493735f1001"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447594"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447594"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1019"
+    },
+    "userId": {
+      "$oid": "6ae2578fc4528493735f1016"
+    },
+    "vacationId": {
+      "$oid": "6ae2578fc4528493735f1002"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447595"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447595"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f101a"
+    },
+    "userId": {
+      "$oid": "6ae2578fc4528493735f1016"
+    },
+    "vacationId": {
+      "$oid": "6ae2578fc4528493735f1006"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447596"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447596"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f101b"
+    },
+    "userId": {
+      "$oid": "6ae2578fc4528493735f1016"
+    },
+    "vacationId": {
+      "$oid": "6ae2578fc4528493735f100a"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447597"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447597"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f101d"
+    },
+    "userId": {
+      "$oid": "6ae2578fc4528493735f101c"
+    },
+    "vacationId": {
+      "$oid": "6ae2578fc4528493735f1000"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447599"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447599"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f101e"
+    },
+    "userId": {
+      "$oid": "6ae2578fc4528493735f101c"
+    },
+    "vacationId": {
+      "$oid": "6ae2578fc4528493735f1002"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447601"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447601"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f101f"
+    },
+    "userId": {
+      "$oid": "6ae2578fc4528493735f101c"
+    },
+    "vacationId": {
+      "$oid": "6ae2578fc4528493735f1003"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447602"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447602"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1020"
+    },
+    "userId": {
+      "$oid": "6ae2578fc4528493735f101c"
+    },
+    "vacationId": {
+      "$oid": "6ae2578fc4528493735f1005"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447603"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447603"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1021"
+    },
+    "userId": {
+      "$oid": "6ae2578fc4528493735f101c"
+    },
+    "vacationId": {
+      "$oid": "6ae2578fc4528493735f1007"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447604"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447604"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1023"
+    },
+    "userId": {
+      "$oid": "6ae2578fc4528493735f1022"
+    },
+    "vacationId": {
+      "$oid": "6ae2578fc4528493735f0ffe"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447606"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447606"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1024"
+    },
+    "userId": {
+      "$oid": "6ae2578fc4528493735f1022"
+    },
+    "vacationId": {
+      "$oid": "6ae2578fc4528493735f1001"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447607"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447607"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1025"
+    },
+    "userId": {
+      "$oid": "6ae2578fc4528493735f1022"
+    },
+    "vacationId": {
+      "$oid": "6ae2578fc4528493735f1004"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447608"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447608"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1026"
+    },
+    "userId": {
+      "$oid": "6ae2578fc4528493735f1022"
+    },
+    "vacationId": {
+      "$oid": "6ae2578fc4528493735f1005"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447609"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447609"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ae2578fc4528493735f1027"
+    },
+    "userId": {
+      "$oid": "6ae2578fc4528493735f1022"
+    },
+    "vacationId": {
+      "$oid": "6ae2578fc4528493735f1009"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1793218447610"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1793218447610"
+      }
+    },
+    "__v": {
+      "$numberInt": "0"
+    }
+  }
+]
