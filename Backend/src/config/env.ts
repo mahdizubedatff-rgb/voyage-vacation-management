@@ -14,10 +14,13 @@ const envSchema = z.object({
   UPLOADS_DIR: z.string().default(path.resolve(process.cwd(), "uploads")),
   MAX_UPLOAD_MB: z.coerce.number().positive().default(5),
 
-  AI_PROVIDER: z.enum(["anthropic", "none"]).default("anthropic"),
-  ANTHROPIC_API_KEY: z.string().optional(),
-  AI_MODEL: z.string().default("claude-opus-5-5"),
-  AI_TIMEOUT_MS: z.coerce.number().int().positive().default(90_000),
+  AI_PROVIDER: z.enum(["gemini", "none"]).default("gemini"),
+  GEMINI_API_KEY: z.string().optional(),
+  // Free-tier eligible models (ai.google.dev/gemini-api/docs/pricing). The fallback is tried
+  // when the primary model is unavailable for the key; leave it empty to disable.
+  GEMINI_MODEL: z.string().min(1).default("gemini-3.8-flash"),
+  GEMINI_FALLBACK_MODEL: z.string().default("gemini-2.5-flash"),
+  AI_TIMEOUT_MS: z.coerce.number().int().positive().default(60_000),
 
   MCP_SERVER_URL: z.string().default("http://localhost:4001/mcp"),
   MCP_PORT: z.coerce.number().int().positive().default(4001),
@@ -33,4 +36,4 @@ if (!parsed.success) {
 }
 
 export const env = parsed.data;
-export const isAiConfigured = (): boolean => env.AI_PROVIDER === "anthropic" && Boolean(env.ANTHROPIC_API_KEY);
+export const isAiConfigured = (): boolean => env.AI_PROVIDER === "gemini" && Boolean(env.GEMINI_API_KEY?.trim());

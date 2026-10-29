@@ -27,15 +27,21 @@ export interface RecommendationResult {
 
 export interface RecommendationProvider {
   readonly name: string;
-  readonly model: string;
-  /** Returns null when the provider judges the input not to be a real destination. */
-  recommend(destination: string): Promise<Recommendation | null>;
+  /** `recommendation` is null when the provider judges the input not to be a real destination. */
+  recommend(destination: string): Promise<{ recommendation: Recommendation | null; model: string }>;
 }
 
 /** Failure categories mapped to HTTP status codes by the service. */
 export class AiProviderError extends Error {
   constructor(
-    public readonly kind: "not_configured" | "auth" | "rate_limit" | "unavailable" | "invalid_response" | "refused",
+    public readonly kind:
+      | "not_configured"
+      | "auth"
+      | "rate_limit"
+      | "unavailable"
+      | "model_unavailable"
+      | "invalid_response"
+      | "refused",
     message: string,
   ) {
     super(message);

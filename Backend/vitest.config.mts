@@ -13,7 +13,9 @@ export default defineConfig({
       NODE_ENV: "test",
       JWT_SECRET: "test-secret-please-change-0123456789",
       UPLOADS_DIR: path.join(os.tmpdir(), "voyage-test-uploads"),
-      ANTHROPIC_API_KEY: "",
+      GEMINI_API_KEY: "",
+      GEMINI_MODEL: "gemini-3.8-flash",
+      GEMINI_FALLBACK_MODEL: "gemini-2.5-flash",
     },
   },
 });

@@ -7,3 +7,5 @@ postman
 .env
 .env.*
 *.log
+project-root
+README.md

@@ -4,11 +4,14 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { ApiError, type Content, type GenerateContentResponse } from "@google/genai";
+import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { createMcpHttpApp } from "../src/mcp/httpServer";
 import { createVacationMcpServer } from "../src/mcp/server";
 import { resetMcpClient, setMcpTransportFactory } from "../src/mcp/client";
 import { parseRegion, regionOf } from "../src/mcp/regions";
+import { setGeminiClient } from "../src/services/ai/gemini";
+import { setQuestionServiceDeps } from "../src/services/mcpQuestionService";
 import { Like } from "../src/models/Like";
 import { api, createUser, createVacation, startDatabase, stopDatabase } from "./helpers";
 
@@ -144,6 +147,86 @@ describe("POST /api/mcp/ask (rules mode, real MCP calls over HTTP)", () => {
     const res = await ask("How many vacations are available?");
     expect(res.status).toBe(503);
     setMcpTransportFactory(() => new StreamableHTTPClientTransport(mcpUrl));
+  });
+});
+
+describe("POST /api/mcp/ask (AI mode: mocked Gemini picks tools, real MCP executes them)", () => {
+  afterEach(() => {
+    setQuestionServiceDeps({});
+    setGeminiClient(undefined);
+  });
+
+  async function ask(question: string) {
+    const { token } = await createUser();
+    return api().post("/api/mcp/ask").set("Authorization", `Bearer ${token}`).send({ question });
+  }
+
+  it("executes the function calls Gemini requests through MCP and feeds real data back", async () => {
+    setQuestionServiceDeps({ aiEnabled: true });
+    const seen: Content[][] = [];
+    const functionCall = { id: "call-1", name: "get_vacations_by_region", args: { region: "Europe" } };
+    setGeminiClient({
+      models: {
+        generateContent: async (params) => {
+          const contents = params.contents as Content[];
+          seen.push(structuredClone(contents));
+          if (seen.length === 1) {
+            return {
+              functionCalls: [functionCall],
+              candidates: [{ content: { role: "model", parts: [{ functionCall, thoughtSignature: "sig" }] } }],
+            } as unknown as GenerateContentResponse;
+          }
+          return { text: "Paris and Rome are our European trips.", candidates: [{ finishReason: "STOP" }] } as unknown as GenerateContentResponse;
+        },
+      },
+    });
+
+    const res = await ask("Which vacations are in Europe?");
+    expect(res.status).toBe(200);
+    expect(res.body.data).toMatchObject({
+      mode: "ai",
+      model: "gemini-3.8-flash",
+      answer: "Paris and Rome are our European trips.",
+      toolCalls: [{ tool: "get_vacations_by_region", arguments: { region: "Europe" } }],
+    });
+
+    // The first request declared the MCP tools; the second carried the model turn verbatim plus the real MCP result.
+    const second = seen[1] as Content[];
+    expect(second[1]?.parts?.[0]?.thoughtSignature).toBe("sig");
+    const functionResponse = second[2]?.parts?.[0]?.functionResponse;
+    expect(functionResponse).toMatchObject({ id: "call-1", name: "get_vacations_by_region" });
+    const output = (functionResponse?.response as { output: { vacations: Array<{ destination: string }> } }).output;
+    expect(output.vacations.map((v) => v.destination)).toEqual(["Paris, France", "Rome, Italy"]);
+  });
+
+  it("declares every MCP tool to Gemini as a function", async () => {
+    setQuestionServiceDeps({ aiEnabled: true });
+    let declared: string[] = [];
+    setGeminiClient({
+      models: {
+        generateContent: async (params) => {
+          const tools = params.config?.tools as Array<{ functionDeclarations: Array<{ name: string; parametersJsonSchema: object }> }>;
+          declared = tools[0]?.functionDeclarations.map((f) => f.name) ?? [];
+          expect(JSON.stringify(tools)).not.toContain("$schema");
+          return { text: "Hello!", candidates: [{ finishReason: "STOP" }] } as unknown as GenerateContentResponse;
+        },
+      },
+    });
+    await ask("Hi there");
+    expect(declared).toHaveLength(6);
+    expect(declared).toContain("get_vacation_statistics");
+  });
+
+  it("maps Gemini rate limits to HTTP 429", async () => {
+    setQuestionServiceDeps({ aiEnabled: true });
+    setGeminiClient({
+      models: {
+        generateContent: async () => {
+          throw new ApiError({ message: "Resource exhausted", status: 429 });
+        },
+      },
+    });
+    expect((await ask("How many vacations are there?")).status).toBe(429);
   });
 });
 

@@ -25,6 +25,7 @@ interface TokenPayload {
 
 export function signToken(user: AuthUser): string {
   return jwt.sign({ role: user.role }, env.JWT_SECRET, {
+    algorithm: "HS256",
     subject: user.id,
     expiresIn: env.JWT_EXPIRES_IN as jwt.SignOptions["expiresIn"],
   });
@@ -38,7 +39,7 @@ export async function authenticate(req: Request, _res: Response, next: NextFunct
 
     let payload: TokenPayload;
     try {
-      payload = jwt.verify(header.slice(7), env.JWT_SECRET) as TokenPayload;
+      payload = jwt.verify(header.slice(7), env.JWT_SECRET, { algorithms: ["HS256"] }) as TokenPayload;
     } catch {
       throw AppError.unauthorized("Your session is invalid or has expired. Please log in again.");
     }

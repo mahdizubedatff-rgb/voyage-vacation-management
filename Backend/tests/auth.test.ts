@@ -38,6 +38,7 @@ describe("POST /api/auth/register", () => {
     [{ ...newUser, lastName: "" }, /last name/i],
     [{ ...newUser, email: "not-an-email" }, /valid email/i],
     [{ ...newUser, password: "abc" }, /at least 4/i],
+    [{ ...newUser, password: "x".repeat(73) }, /at most 72/i],
   ])("validates input %#", async (body, message) => {
     const res = await api().post("/api/auth/register").send(body);
     expect(res.status).toBe(400);
@@ -79,6 +80,13 @@ describe("GET /api/auth/me and authentication middleware", () => {
     expect((await api().get("/api/auth/me")).status).toBe(401);
     const tampered = await api().get("/api/auth/me").set("Authorization", `Bearer ${token.slice(0, -2)}xx`);
     expect(tampered.status).toBe(401);
+  });
+
+  it("rejects unsigned (alg: none) tokens even for a real user id", async () => {
+    const { id } = await createUser("ADMIN");
+    const encode = (value: object) => Buffer.from(JSON.stringify(value)).toString("base64url");
+    const forged = `${encode({ alg: "none", typ: "JWT" })}.${encode({ sub: id, role: "ADMIN" })}.`;
+    expect((await api().get("/api/auth/me").set("Authorization", `Bearer ${forged}`)).status).toBe(401);
   });
 
   it("rejects a token whose user was deleted", async () => {

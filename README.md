@@ -28,6 +28,7 @@ Voyage is a full-stack vacation platform. Travellers browse a curated catalogue,
 - [Screenshots](#screenshots)
 - [Troubleshooting](#troubleshooting)
 - [Publishing to GitHub](#publishing-to-github)
+- [Submission ZIP](#submission-zip)
 
 ---
 
@@ -41,7 +42,7 @@ Voyage is a full-stack vacation platform. Travellers browse a curated catalogue,
 - Vacation catalogue as a responsive card grid (3 / 2 / 1 columns) sorted by **start date ascending**, **9 per page**.
 - Each card shows the destination, image, dates, description, price and like count, with a **like / unlike** heart (optimistic UI that rolls back on error and reconciles with the server count).
 - Filters: **All**, **My favourites**, **Upcoming** (not started) and **Active now**. Filtering is applied in the database *before* pagination, and changing a filter resets to page 1. Filter and page live in the URL.
-- **AI Concierge**: overview, attractions, activities, a day-by-day itinerary and tips for any destination (live Claude API, structured output).
+- **AI Concierge**: overview, attractions, activities, a day-by-day itinerary and tips for any destination (live Google Gemini, structured JSON output).
 - **Ask Voyage**: natural-language questions answered through MCP tools over live MongoDB data.
 
 **Administrators (role `ADMIN`)**
@@ -61,7 +62,7 @@ Voyage is a full-stack vacation platform. Travellers browse a curated catalogue,
 | ---------- | ------------ |
 | Frontend   | React 18, TypeScript (strict), Vite, React Router, TanStack Query, Axios, React Hook Form + Zod, Tailwind CSS v4, Recharts, Lucide icons, Framer Motion |
 | Backend    | Node.js, Express 5, TypeScript (strict), MongoDB + Mongoose, JWT, bcrypt, Multer, Zod, Helmet, express-rate-limit |
-| AI & MCP   | Anthropic Claude API (`@anthropic-ai/sdk`), official MCP TypeScript SDK (`@modelcontextprotocol/sdk`) over Streamable HTTP |
+| AI & MCP   | Google Gemini API (official `@google/genai` SDK), official MCP TypeScript SDK (`@modelcontextprotocol/sdk`) over Streamable HTTP |
 | Testing    | Vitest, Supertest, Testing Library, jsdom |
 | Ops        | Docker, Docker Compose, nginx |
 
@@ -76,7 +77,7 @@ Voyage is a full-stack vacation platform. Travellers browse a curated catalogue,
             ┌─────────────────────────┐     MCP client (Streamable HTTP)    ┌────────────────────────┐
             │ backend (Express :4000) │ ──────────────────────────────────▶ │ mcp (MCP server :4001) │
             │ auth · vacations · likes│                                     │ 6 read-only tools      │
-            │ reports · AI · /mcp/ask │ ──▶ Anthropic API (if configured)   └───────────┬────────────┘
+            │ reports · AI · /mcp/ask │ ──▶ Google Gemini (if configured)   └───────────┬────────────┘
             └───────────┬─────────────┘                                                 │
                         ▼                                                               ▼
                  ┌──────────────┐   uploads volume (images)                     same MongoDB
@@ -130,7 +131,7 @@ VacationManagement/
 Requirements: Docker Desktop. No local Node.js or MongoDB is needed.
 
 ```bash
-cp .env.example .env          # then set JWT_SECRET (and optionally ANTHROPIC_API_KEY)
+cp .env.example .env          # then set JWT_SECRET (and GEMINI_API_KEY for live AI)
 docker compose up -d --build
 ```
 
@@ -186,9 +187,11 @@ Defined in [`.env.example`](.env.example). Never commit real `.env` files.
 | `MAX_UPLOAD_MB` | `5` | Image size limit |
 | `MCP_SERVER_URL` | `http://localhost:4001/mcp` | Where the backend's MCP client connects |
 | `MCP_PORT` | `4001` | MCP server port |
-| `AI_PROVIDER` | `anthropic` | `anthropic` or `none` |
-| `ANTHROPIC_API_KEY` | empty | Enables live AI. Backend only, never sent to the browser |
-| `AI_MODEL` | `claude-opus-5-5` | Claude model id |
+| `AI_PROVIDER` | `gemini` | `gemini` or `none` |
+| `GEMINI_API_KEY` | empty | Enables live AI. Backend only, never sent to the browser or logged |
+| `GEMINI_MODEL` | `gemini-3.8-flash` | Primary Gemini model (free tier) |
+| `GEMINI_FALLBACK_MODEL` | `gemini-2.5-flash` | Used if the primary model is unavailable for the key; empty disables |
+| `AI_TIMEOUT_MS` | `60000` | Per-request timeout for Gemini calls |
 | `SEED_ADMIN_PASSWORD` / `SEED_USER_PASSWORD` | `Admin1234` / `User1234` | Seed account passwords (development only) |
 
 ## Database & seeding
@@ -249,7 +252,7 @@ Status codes: `400` validation, `401` unauthenticated, `403` wrong role, `404` n
 | `get_vacation_statistics` | — | total, by status, average/cheapest/most expensive/most liked, per region |
 
 - **How questions are answered** (`src/services/mcpQuestionService.ts`):
-  - With `ANTHROPIC_API_KEY` set (**AI mode**), the backend lists the MCP tools, passes them to Claude as tool definitions, and runs a tool-use loop. Each tool call Claude makes is executed through the **MCP client**, and Claude writes the final answer from the results.
+  - With `GEMINI_API_KEY` set (**AI mode**), the backend lists the MCP tools and passes them to Gemini as function declarations. Each function call Gemini makes is executed through the **MCP client**, the real result is sent back, and Gemini writes the final answer from it.
   - Without a key (**rules mode**), a deterministic intent router chooses the tool and arguments, executes them **through the same MCP client**, and formats the answer.
   - In both modes the response reports `mode` and every MCP `toolCall`, and the UI shows which tools were used.
 - **Testing the MCP server**:
@@ -258,16 +261,19 @@ Status codes: `400` validation, `401` unauthenticated, `403` wrong role, `404` n
 
 ## AI configuration
 
-- Provider: Anthropic Claude through the official SDK, configured only on the backend (`ANTHROPIC_API_KEY`, `AI_MODEL`). The key is never exposed to the frontend.
-- Recommendations use **structured outputs** (a Zod schema) to return validated JSON: overview, best time to visit, attractions, activities, itinerary and tips. Non-destinations are rejected with `422`.
-- Error handling:
+- Provider: **Google Gemini** through the official `@google/genai` SDK, called only from the backend (`src/services/ai/`). The key is read from `GEMINI_API_KEY`, is never sent to the browser, and never appears in error messages or logs.
+- Model: `GEMINI_MODEL` (default `gemini-3.8-flash`, on the Gemini API free tier). If Google reports that model unavailable for your key, the backend retries once with `GEMINI_FALLBACK_MODEL` (default `gemini-2.5-flash`). The response shows which model answered.
+- Getting a key: create one at [Google AI Studio](https://aistudio.google.com/apikey), put it in `.env` (Docker) or `Backend/.env` (local), and restart the backend (`docker compose up -d`).
+- Recommendations use Gemini **structured output** (`responseMimeType: application/json` plus a JSON Schema generated from the Zod schema). The answer is validated again with Zod: overview, best time to visit, attractions, activities, itinerary and tips. Non-destinations are rejected with `422`.
+- Error handling (each request has an `AI_TIMEOUT_MS` timeout):
   - Missing key → `503` with a clear message. The app **never** shows canned or fake recommendations.
   - Invalid key → `502`.
-  - Rate limit → `429`.
-  - Network or provider outage → `503`.
-  - Invalid or incomplete output → `502`.
-  - Refusal → `422`.
-- Automated tests use a **mocked provider** (`tests/ai.test.ts`). Live verification needs a real key: set it in `.env`, restart, and use the AI Concierge page.
+  - Rate limit or free-tier quota exhausted → `429`.
+  - Model unavailable (after the fallback) → `503`.
+  - Timeout, network or provider outage → `503`.
+  - Invalid, truncated or schema-mismatched output → `502`.
+  - Blocked by safety filters → `422`.
+- Automated tests use **mocked Gemini SDK responses** (`tests/ai.test.ts`, plus the AI-mode tests in `tests/mcp.test.ts`). Live verification needs a real key.
 
 ## Reports & CSV export
 
@@ -278,13 +284,14 @@ You can also fetch it directly: `GET /api/reports/likes/csv` (admin token).
 ## Testing
 
 ```bash
-# Backend: 66 tests (auth, roles, CRUD, validation, uploads, likes, filters, pagination, reports, CSV, AI mock, MCP)
+# Backend: 83 tests (auth incl. forged tokens, roles, CRUD, validation, uploads, likes, filters, pagination,
+#          reports, CSV, mocked Gemini responses, real MCP server over HTTP, Gemini-driven MCP tool calls)
 cd Backend
 npm run typecheck && npm run lint
 MONGO_TEST_URI=mongodb://127.0.0.1:27017 npm test   # any MongoDB; each test file uses its own throw-away database
 # (without MONGO_TEST_URI, tests start an in-memory MongoDB via mongodb-memory-server)
 
-# Frontend: 15 tests (components, routing/role guards, login flows, utilities)
+# Frontend: 16 tests (components, routing/role guards, login flows, pagination redirect, utilities)
 cd ../Frontend
 npm run lint && npm test && npm run build
 ```
@@ -317,7 +324,9 @@ Test databases are named `voyage_test_*` and dropped when each file finishes.
 | --- | --- |
 | `Set JWT_SECRET in .env` when running Compose | `cp .env.example .env` and set `JWT_SECRET` |
 | Port 8080 or 4000 already in use | Change the left side of `ports:` in `docker-compose.yml` |
-| AI page says "not configured" | Add `ANTHROPIC_API_KEY` to `.env`, then `docker compose up -d` |
+| AI page says "not configured" | Add `GEMINI_API_KEY` to `.env`, then `docker compose up -d` |
+| AI returns 429 | Free-tier quota or rate limit reached; wait a minute, or set `GEMINI_MODEL` to another free-tier model |
+| AI returns 503 "model not available" | Set `GEMINI_MODEL` / `GEMINI_FALLBACK_MODEL` to models listed for your key in AI Studio |
 | "Knowledge service (MCP) is unavailable" | Check `docker compose ps` (the `mcp` service must be healthy) or run `npm run dev:mcp` locally |
 | Images missing after `docker compose down -v` | Volumes were wiped; restart and the backend reseeds automatically |
 | Want fresh demo data | `docker compose exec backend node dist/seed/seed.js` (or `npm run seed` locally) |
@@ -335,4 +344,12 @@ git remote add origin https://github.com/<your-user>/voyage-vacation-management.
 git push -u origin main
 ```
 
-`.gitignore` already excludes `node_modules`, builds, `.env` files, uploads and ZIP files.
+`.gitignore` already excludes `node_modules`, builds, `.env` files, uploads and ZIP files. The repository is already initialised locally with commits on `main`, so in practice only the `git remote add` and `git push` lines are needed.
+
+## Submission ZIP
+
+```bash
+python scripts/build_submission_zip.py          # writes ../Ameer Zubedat.zip
+```
+
+The ZIP contains only `Database/`, `Backend/` and `Frontend/`, as the instructor requires. The project-level files (`README.md`, `docker-compose.yml`, `.env.example`, `.gitignore`) are copied into `Backend/project-root/` inside the ZIP, so the submission runs on its own (see `Backend/README.md`). The script skips `node_modules`, builds, uploads, logs and real `.env` files, and refuses to package anything that looks like an API key.

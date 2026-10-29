@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { BarChart3, CalendarClock, Compass, Heart, Layers, Plus, Plane, Sun } from "lucide-react";
@@ -76,6 +76,16 @@ export function VacationsPage() {
       onError: (err) => toast.error(getErrorMessage(err, "The vacation could not be deleted.")),
     });
   };
+
+  // A page past the end (old link, or the last item on it was removed) jumps to the last real page.
+  const lastPage = data?.totalPages ?? 1;
+  const outOfRange = Boolean(data && data.total > 0 && page > lastPage);
+  useEffect(() => {
+    if (!outOfRange) return;
+    const search = new URLSearchParams(params);
+    search.set("page", String(lastPage));
+    setParams(search, { replace: true });
+  }, [outOfRange, lastPage, params, setParams]);
 
   const filters = isAdmin ? ADMIN_FILTERS : USER_FILTERS;
 

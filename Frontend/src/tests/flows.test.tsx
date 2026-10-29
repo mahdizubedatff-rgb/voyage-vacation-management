@@ -79,6 +79,14 @@ describe("routing and authentication flows", () => {
     await waitFor(() => expect(vacationService.list).toHaveBeenCalledWith({ filter: "all", page: 1, limit: 9 }));
   });
 
+  it("redirects a page number past the end to the last page", async () => {
+    localStorage.setItem("voyage.token", "jwt");
+    vi.mocked(authService.me).mockResolvedValueOnce(user);
+    vi.mocked(vacationService.list).mockImplementation(async ({ page }) => ({ items: [], page, limit: 9, total: 14, totalPages: 2 }));
+    renderApp("/vacations?page=5");
+    await waitFor(() => expect(vacationService.list).toHaveBeenCalledWith({ filter: "all", page: 2, limit: 9 }));
+  });
+
   it("keeps regular users out of admin pages", async () => {
     localStorage.setItem("voyage.token", "jwt");
     vi.mocked(authService.me).mockResolvedValueOnce(user);

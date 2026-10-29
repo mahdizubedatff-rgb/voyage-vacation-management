@@ -12,7 +12,7 @@ async function main(): Promise<void> {
   }
   createApp().listen(env.PORT, () => {
     console.log(`Voyage API listening on http://localhost:${env.PORT}/api`);
-    console.log(`AI provider: ${isAiConfigured() ? `${env.AI_PROVIDER} (${env.AI_MODEL})` : "not configured"}`);
+    console.log(`AI provider: ${isAiConfigured() ? `${env.AI_PROVIDER} (${env.GEMINI_MODEL})` : "not configured (set GEMINI_API_KEY)"}`);
     console.log(`MCP server: ${env.MCP_SERVER_URL}`);
   });
 }

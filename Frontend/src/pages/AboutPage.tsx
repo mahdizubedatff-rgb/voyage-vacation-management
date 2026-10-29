@@ -15,7 +15,7 @@ const FEATURES = [
 const STACK = [
   { group: "Frontend", items: ["React 18", "TypeScript", "Vite", "Tailwind CSS", "TanStack Query", "React Hook Form + Zod", "Recharts", "Framer Motion"] },
   { group: "Backend", items: ["Node.js", "Express", "TypeScript", "MongoDB", "Mongoose", "JWT", "bcrypt", "Multer", "Zod"] },
-  { group: "AI & tooling", items: ["Anthropic Claude API", "Model Context Protocol SDK", "Docker Compose", "Vitest", "Supertest"] },
+  { group: "AI & tooling", items: ["Google Gemini API (@google/genai)", "Model Context Protocol SDK", "Docker Compose", "Vitest", "Supertest"] },
 ];
 
 export function AboutPage() {

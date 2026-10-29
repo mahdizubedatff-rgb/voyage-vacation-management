@@ -1,9 +1,10 @@
-import Anthropic from "@anthropic-ai/sdk";
-import { env, isAiConfigured } from "../config/env";
+import type { Content, Part } from "@google/genai";
+import { isAiConfigured } from "../config/env";
 import { mcpClient, type VacationMcpClient } from "../mcp/client";
 import { parseRegion } from "../mcp/regions";
 import type { VacationSummary, VacationDetails } from "../mcp/vacationData";
-import { mapAnthropicError } from "./ai/anthropicProvider";
+import { assertNotBlocked, generateWithFallback, mapGeminiError, toGeminiSchema } from "./ai/gemini";
+import { AiProviderError } from "./ai/types";
 import { AppError } from "../utils/AppError";
 
 export interface ToolCallRecord {
@@ -14,8 +15,10 @@ export interface ToolCallRecord {
 export interface QuestionAnswer {
   question: string;
   answer: string;
-  /** "ai": an LLM chose the MCP tools. "rules": a deterministic router chose them. Both execute real MCP calls. */
+  /** "ai": Gemini chose the MCP tools. "rules": a deterministic router chose them. Both execute real MCP calls. */
   mode: "ai" | "rules";
+  /** The Gemini model that answered (AI mode only). */
+  model?: string;
   toolCalls: ToolCallRecord[];
 }
 
@@ -148,65 +151,63 @@ Use the provided tools to look up facts; never guess catalogue data. Prices are 
 If a question is unrelated to Voyage vacations, say briefly that you can only help with questions about our vacations.
 Answer concisely in plain text (no markdown headings). Use short bullet lines starting with "• " for lists.`;
 
-/** LLM-driven answering: Claude picks MCP tools, the backend executes them over the MCP client. */
+/** Gemini-driven answering: Gemini picks MCP tools (function calling), the backend executes them over the MCP client. */
 async function answerWithAi(question: string, client: VacationMcpClient): Promise<QuestionAnswer> {
-  const anthropic = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, timeout: env.AI_TIMEOUT_MS, maxRetries: 2 });
   const mcpTools = await client.listTools();
-  const tools: Anthropic.Tool[] = mcpTools.map((tool) => ({
-    name: tool.name,
-    description: tool.description ?? tool.name,
-    input_schema: tool.inputSchema as Anthropic.Tool.InputSchema,
-  }));
+  const tools = [
+    {
+      functionDeclarations: mcpTools.map((tool) => ({
+        name: tool.name,
+        description: tool.description ?? tool.name,
+        parametersJsonSchema: toGeminiSchema(tool.inputSchema),
+      })),
+    },
+  ];
 
   const toolCalls: ToolCallRecord[] = [];
-  const messages: Anthropic.MessageParam[] = [
-    { role: "user", content: `Today's date is ${new Date().toISOString().slice(0, 10)}.\n\nQuestion: ${question}` },
+  const contents: Content[] = [
+    { role: "user", parts: [{ text: `Today's date is ${new Date().toISOString().slice(0, 10)}.
+
+Question: ${question}` }] },
   ];
 
   try {
     for (let turn = 0; turn < 6; turn++) {
-      const response = await anthropic.messages.create({
-        model: env.AI_MODEL,
-        max_tokens: 4000,
-        output_config: { effort: "low" },
-        system: AGENT_SYSTEM_PROMPT,
-        tools,
-        messages,
+      const { response, model } = await generateWithFallback({
+        contents,
+        config: { systemInstruction: AGENT_SYSTEM_PROMPT, tools, automaticFunctionCalling: { disable: true } },
       });
+      assertNotBlocked(response);
 
-      if (response.stop_reason === "refusal") {
-        return { question, answer: "Sorry, I can't help with that request.", mode: "ai", toolCalls };
+      const calls = response.functionCalls ?? [];
+      if (calls.length === 0) {
+        return { question, answer: response.text?.trim() || HELP_MESSAGE, mode: "ai", model, toolCalls };
       }
 
-      const toolUses = response.content.filter((block): block is Anthropic.ToolUseBlock => block.type === "tool_use");
-      if (response.stop_reason !== "tool_use" || toolUses.length === 0) {
-        const answer = response.content
-          .filter((block): block is Anthropic.TextBlock => block.type === "text")
-          .map((block) => block.text)
-          .join("\n")
-          .trim();
-        return { question, answer: answer || HELP_MESSAGE, mode: "ai", toolCalls };
-      }
+      // Keep the model turn verbatim (it may carry thought signatures Gemini needs on the next request).
+      const modelContent = response.candidates?.[0]?.content;
+      contents.push(modelContent ?? { role: "model", parts: calls.map((functionCall) => ({ functionCall })) });
 
-      messages.push({ role: "assistant", content: response.content });
-      const results = await Promise.all(
-        toolUses.map(async (use): Promise<Anthropic.ToolResultBlockParam> => {
-          const args = (use.input ?? {}) as Record<string, unknown>;
-          toolCalls.push({ tool: use.name, arguments: args });
+      const parts = await Promise.all(
+        calls.map(async (call): Promise<Part> => {
+          const name = call.name ?? "";
+          const args = call.args ?? {};
+          toolCalls.push({ tool: name, arguments: args });
           try {
-            const result = await client.callTool(use.name, args);
-            return { type: "tool_result", tool_use_id: use.id, content: JSON.stringify(result) };
+            const result = await client.callTool(name, args);
+            return { functionResponse: { id: call.id, name, response: { output: result } } };
           } catch (error) {
-            return { type: "tool_result", tool_use_id: use.id, content: (error as Error).message, is_error: true };
+            return { functionResponse: { id: call.id, name, response: { error: (error as Error).message } } };
           }
         }),
       );
-      messages.push({ role: "user", content: results });
+      contents.push({ role: "user", parts });
     }
   } catch (error) {
     if (error instanceof AppError) throw error;
-    const mapped = mapAnthropicError(error);
-    throw new AppError(mapped.kind === "rate_limit" ? 429 : 503, mapped.message);
+    const mapped = mapGeminiError(error);
+    const status = mapped.kind === "rate_limit" ? 429 : mapped.kind === "refused" ? 422 : mapped.kind === "auth" || mapped.kind === "invalid_response" ? 502 : 503;
+    throw new AppError(status, mapped instanceof AiProviderError ? mapped.message : "The AI service failed");
   }
 
   return { question, answer: "Sorry, I couldn't finish answering that question. Please try rephrasing it.", mode: "ai", toolCalls };

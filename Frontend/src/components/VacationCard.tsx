@@ -93,7 +93,7 @@ export function VacationCard({ vacation, index = 0, mode, likePending, onToggleL
         <div className="mt-6 flex items-end justify-between gap-4 border-t border-line/80 pt-5">
           <div>
             <p className="text-xs font-medium tracking-wide text-muted uppercase">From</p>
-            <p className="font-display text-[1.75rem] leading-none text-ink">
+            <p className="font-display text-[1.75rem] leading-none whitespace-nowrap text-ink">
               {formatPrice(vacation.price)}
               <span className="ml-1 font-sans text-sm font-normal text-muted">/ person</span>
             </p>
@@ -106,7 +106,7 @@ export function VacationCard({ vacation, index = 0, mode, likePending, onToggleL
                 aria-label={`Edit ${vacation.destination}`}
               >
                 <Pencil className="size-4" aria-hidden />
-                Edit
+                <span className="hidden xl:inline">Edit</span>
               </Link>
               <button
                 type="button"
