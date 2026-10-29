@@ -2,7 +2,7 @@
 
 > John Bryce Full Stack Web Developer — final project · **Ameer Zubedat**
 >
-> **Repository:** https://github.com/mahdizubedatff-rgb/-voyage-vacation-management
+> **Repository:** https://github.com/mahdizubedatff-rgb/voyage-vacation-management
 
 Voyage is a full-stack vacation platform. Travellers browse a curated catalogue, save favourites, get AI travel recommendations and ask questions answered by a real **Model Context Protocol (MCP)** server. Administrators manage the catalogue, upload images, and analyse likes with a chart and a CSV export.
 
@@ -349,7 +349,7 @@ git init
 git add .
 git commit -m "Voyage: premium vacation management platform"
 git branch -M main
-git remote add origin https://github.com/mahdizubedatff-rgb/-voyage-vacation-management.git
+git remote add origin https://github.com/mahdizubedatff-rgb/voyage-vacation-management.git
 git push -u origin main
 ```
 
