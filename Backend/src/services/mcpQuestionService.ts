@@ -19,6 +19,8 @@ export interface QuestionAnswer {
   mode: "ai" | "rules";
   /** The Gemini model that answered (AI mode only). */
   model?: string;
+  /** Set when AI was configured but unavailable, so the rule-based router answered instead. */
+  notice?: string;
   toolCalls: ToolCallRecord[];
 }
 
@@ -215,5 +217,18 @@ Question: ${question}` }] },
 
 export async function askQuestion(question: string): Promise<QuestionAnswer> {
   const client = getClient();
-  return aiEnabled() ? answerWithAi(question, client) : answerWithRules(question, client);
+  if (!aiEnabled()) return answerWithRules(question, client);
+  try {
+    return await answerWithAi(question, client);
+  } catch (error) {
+    // Free-tier quotas run out quickly; the question is still answered from real MCP data,
+    // just with rule-based tool selection. MCP outages (also 503) are not masked.
+    const status = error instanceof AppError ? error.statusCode : 0;
+    const mcpDown = error instanceof AppError && /MCP/.test(error.message);
+    if ((status === 429 || status === 503) && !mcpDown) {
+      const answer = await answerWithRules(question, client);
+      return { ...answer, notice: "The AI service is busy, so this answer used rule-based tool selection." };
+    }
+    throw error;
+  }
 }

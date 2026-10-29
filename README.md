@@ -189,9 +189,9 @@ Defined in [`.env.example`](.env.example). Never commit real `.env` files.
 | `MCP_PORT` | `4001` | MCP server port |
 | `AI_PROVIDER` | `gemini` | `gemini` or `none` |
 | `GEMINI_API_KEY` | empty | Enables live AI. Backend only, never sent to the browser or logged |
-| `GEMINI_MODEL` | `gemini-3.8-flash` | Primary Gemini model (free tier) |
-| `GEMINI_FALLBACK_MODEL` | `gemini-2.5-flash` | Used if the primary model is unavailable for the key; empty disables |
-| `AI_TIMEOUT_MS` | `60000` | Per-request timeout for Gemini calls |
+| `GEMINI_MODEL` | `gemini-3.6-flash` | Primary Gemini model (free tier) |
+| `GEMINI_FALLBACK_MODEL` | `gemini-3.1-flash-lite` | Used if the primary model is unavailable, overloaded or times out; empty disables |
+| `AI_TIMEOUT_MS` | `45000` | Per-request timeout for Gemini calls |
 | `SEED_ADMIN_PASSWORD` / `SEED_USER_PASSWORD` | `Admin1234` / `User1234` | Seed account passwords (development only) |
 
 ## Database & seeding
@@ -254,6 +254,7 @@ Status codes: `400` validation, `401` unauthenticated, `403` wrong role, `404` n
 - **How questions are answered** (`src/services/mcpQuestionService.ts`):
   - With `GEMINI_API_KEY` set (**AI mode**), the backend lists the MCP tools and passes them to Gemini as function declarations. Each function call Gemini makes is executed through the **MCP client**, the real result is sent back, and Gemini writes the final answer from it.
   - Without a key (**rules mode**), a deterministic intent router chooses the tool and arguments, executes them **through the same MCP client**, and formats the answer.
+  - If a key is set but every Gemini model is rate-limited or down, the question is still answered from real MCP data in rules mode, with a visible notice. An invalid key is reported as an error and never masked.
   - In both modes the response reports `mode` and every MCP `toolCall`, and the UI shows which tools were used.
 - **Testing the MCP server**:
   - `npm test` (`tests/mcp.test.ts`) starts the real HTTP MCP server, connects an MCP client, checks the tool list, verifies results against MongoDB data and covers invalid input. It also runs the `/api/mcp/ask` flow end to end and the MCP-down case (`503`).
@@ -262,18 +263,23 @@ Status codes: `400` validation, `401` unauthenticated, `403` wrong role, `404` n
 ## AI configuration
 
 - Provider: **Google Gemini** through the official `@google/genai` SDK, called only from the backend (`src/services/ai/`). The key is read from `GEMINI_API_KEY`, is never sent to the browser, and never appears in error messages or logs.
-- Model: `GEMINI_MODEL` (default `gemini-3.8-flash`, on the Gemini API free tier). If Google reports that model unavailable for your key, the backend retries once with `GEMINI_FALLBACK_MODEL` (default `gemini-2.5-flash`). The response shows which model answered.
+- Model: `GEMINI_MODEL` (default `gemini-3.6-flash`, on the Gemini API free tier). If that model is unavailable for your key, overloaded (503) or times out (504), the backend retries once with `GEMINI_FALLBACK_MODEL` (default `gemini-3.1-flash-lite`). The response shows which model answered. Both defaults were checked live against a new free-tier key on 2026-10-29. `gemini-3.8-flash` timed out (504) on every attempt and `gemini-2.5-flash` is closed to new users, so neither is a default.
 - Getting a key: create one at [Google AI Studio](https://aistudio.google.com/apikey), put it in `.env` (Docker) or `Backend/.env` (local), and restart the backend (`docker compose up -d`).
 - Recommendations use Gemini **structured output** (`responseMimeType: application/json` plus a JSON Schema generated from the Zod schema). The answer is validated again with Zod: overview, best time to visit, attractions, activities, itinerary and tips. Non-destinations are rejected with `422`.
 - Error handling (each request has an `AI_TIMEOUT_MS` timeout):
   - Missing key → `503` with a clear message. The app **never** shows canned or fake recommendations.
   - Invalid key → `502`.
   - Rate limit or free-tier quota exhausted → `429`.
-  - Model unavailable (after the fallback) → `503`.
+  - Model unavailable, overloaded or timing out (after the fallback) → `503`.
   - Timeout, network or provider outage → `503`.
   - Invalid, truncated or schema-mismatched output → `502`.
   - Blocked by safety filters → `422`.
-- Automated tests use **mocked Gemini SDK responses** (`tests/ai.test.ts`, plus the AI-mode tests in `tests/mcp.test.ts`). Live verification needs a real key.
+- Free-tier limits: Google's free tier allows about **5 requests per minute per model** for `gemini-3.6-flash`, and a question can take 2–3 requests. Quotas are per model, so a rate-limited primary falls back to `GEMINI_FALLBACK_MODEL`.
+- Automated tests use **mocked Gemini SDK responses** (`tests/ai.test.ts`, plus the AI-mode tests in `tests/mcp.test.ts`).
+- **Live verification (2026-10-29, free-tier key, Docker stack):**
+  - AI recommendations returned real, structured itineraries for Kyoto, Lisbon and Cape Town, and rejected nonsense input with `422`.
+  - Ask Voyage answered the example questions with Gemini choosing the tools. Every answer matched the database: 14 vacations, average $3,152.86, 4 in Europe, cheapest Marrakech $1,890, Bali the only Asian trip under $2,500. Off-topic questions are declined without any tool calls.
+  - With the primary model's per-minute quota used up, answers came from the fallback model.
 
 ## Reports & CSV export
 
@@ -284,7 +290,7 @@ You can also fetch it directly: `GET /api/reports/likes/csv` (admin token).
 ## Testing
 
 ```bash
-# Backend: 83 tests (auth incl. forged tokens, roles, CRUD, validation, uploads, likes, filters, pagination,
+# Backend: 86 tests (auth incl. forged tokens, roles, CRUD, validation, uploads, likes, filters, pagination,
 #          reports, CSV, mocked Gemini responses, real MCP server over HTTP, Gemini-driven MCP tool calls)
 cd Backend
 npm run typecheck && npm run lint
@@ -315,7 +321,8 @@ Test databases are named `voyage_test_*` and dropped when each file finishes.
 | ![Cards](docs/screenshots/vacation-cards.jpg) | ![Register](docs/screenshots/register.jpg) |
 | ![Admin dashboard](docs/screenshots/admin-dashboard.jpg) | ![Add vacation](docs/screenshots/add-vacation.jpg) |
 | ![Delete confirmation](docs/screenshots/delete-confirmation.jpg) | ![Reports](docs/screenshots/reports.jpg) |
-| ![MCP questions](docs/screenshots/mcp-questions.jpg) | ![About](docs/screenshots/about.jpg) |
+| ![MCP questions](docs/screenshots/mcp-questions.jpg) | ![AI recommendation](docs/screenshots/ai-recommendation.jpg) |
+| ![About](docs/screenshots/about.jpg) | |
 | ![Mobile vacations](docs/screenshots/mobile-vacations.jpg) | ![Mobile menu](docs/screenshots/mobile-menu.jpg) |
 
 ## Troubleshooting
@@ -325,7 +332,7 @@ Test databases are named `voyage_test_*` and dropped when each file finishes.
 | `Set JWT_SECRET in .env` when running Compose | `cp .env.example .env` and set `JWT_SECRET` |
 | Port 8080 or 4000 already in use | Change the left side of `ports:` in `docker-compose.yml` |
 | AI page says "not configured" | Add `GEMINI_API_KEY` to `.env`, then `docker compose up -d` |
-| AI returns 429 | Free-tier quota or rate limit reached; wait a minute, or set `GEMINI_MODEL` to another free-tier model |
+| AI returns 429 | Both models' free-tier per-minute quota is used up; wait a minute (Ask Voyage keeps answering in rules mode) |
 | AI returns 503 "model not available" | Set `GEMINI_MODEL` / `GEMINI_FALLBACK_MODEL` to models listed for your key in AI Studio |
 | "Knowledge service (MCP) is unavailable" | Check `docker compose ps` (the `mcp` service must be healthy) or run `npm run dev:mcp` locally |
 | Images missing after `docker compose down -v` | Volumes were wiped; restart and the backend reseeds automatically |

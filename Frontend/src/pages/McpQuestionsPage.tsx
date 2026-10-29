@@ -118,8 +118,9 @@ export function McpQuestionsPage() {
                         <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 px-1 text-xs text-muted">
                           <span className="inline-flex items-center gap-1">
                             <Cpu className="size-3.5" aria-hidden />
-                            {entry.result.mode === "ai" ? "AI tool selection" : "Rule-based tool selection"}
+                            {entry.result.mode === "ai" ? `AI tool selection${entry.result.model ? ` · ${entry.result.model}` : ""}` : "Rule-based tool selection"}
                           </span>
+                          {entry.result.notice && <span className="text-gold-deep">{entry.result.notice}</span>}
                           {entry.result.toolCalls.length > 0 && (
                             <span className="inline-flex items-center gap-1">
                               <Wrench className="size-3.5" aria-hidden />

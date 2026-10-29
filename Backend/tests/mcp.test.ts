@@ -185,7 +185,7 @@ describe("POST /api/mcp/ask (AI mode: mocked Gemini picks tools, real MCP execut
     expect(res.status).toBe(200);
     expect(res.body.data).toMatchObject({
       mode: "ai",
-      model: "gemini-3.8-flash",
+      model: "gemini-3.6-flash",
       answer: "Paris and Rome are our European trips.",
       toolCalls: [{ tool: "get_vacations_by_region", arguments: { region: "Europe" } }],
     });
@@ -217,7 +217,7 @@ describe("POST /api/mcp/ask (AI mode: mocked Gemini picks tools, real MCP execut
     expect(declared).toContain("get_vacation_statistics");
   });
 
-  it("maps Gemini rate limits to HTTP 429", async () => {
+  it("answers from real MCP data with rule-based selection when every Gemini model is rate-limited", async () => {
     setQuestionServiceDeps({ aiEnabled: true });
     setGeminiClient({
       models: {
@@ -226,7 +226,22 @@ describe("POST /api/mcp/ask (AI mode: mocked Gemini picks tools, real MCP execut
         },
       },
     });
-    expect((await ask("How many vacations are there?")).status).toBe(429);
+    const res = await ask("How many vacations are there?");
+    expect(res.status).toBe(200);
+    expect(res.body.data).toMatchObject({ mode: "rules", notice: expect.stringMatching(/busy/) });
+    expect(res.body.data.answer).toMatch(/There are 4 vacations/);
+  });
+
+  it("does not mask an invalid Gemini key", async () => {
+    setQuestionServiceDeps({ aiEnabled: true });
+    setGeminiClient({
+      models: {
+        generateContent: async () => {
+          throw new ApiError({ message: "API key not valid", status: 400 });
+        },
+      },
+    });
+    expect((await ask("How many vacations are there?")).status).toBe(502);
   });
 });
 

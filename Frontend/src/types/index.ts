@@ -70,6 +70,8 @@ export interface QuestionAnswer {
   question: string;
   answer: string;
   mode: "ai" | "rules";
+  model?: string;
+  notice?: string;
   toolCalls: Array<{ tool: string; arguments: Record<string, unknown> }>;
 }
 

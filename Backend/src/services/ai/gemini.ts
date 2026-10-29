@@ -63,8 +63,10 @@ export function assertNotBlocked(response: GenerateContentResponse): void {
 }
 
 /**
- * Calls generateContent on GEMINI_MODEL, falling back to GEMINI_FALLBACK_MODEL when the
- * primary model is unavailable for this key. Returns the response and the model that answered.
+ * Calls generateContent on GEMINI_MODEL, falling back to GEMINI_FALLBACK_MODEL when the primary
+ * model is unavailable for this key, rate-limited (free-tier quotas are per model), overloaded or timing out.
+ * Auth and invalid-request errors are not retried.
+ * Returns the response and the model that answered.
  */
 export async function generateWithFallback(
   params: Omit<GenerateContentParameters, "model">,
@@ -77,7 +79,8 @@ export async function generateWithFallback(
       return { response, model };
     } catch (error) {
       lastError = mapGeminiError(error);
-      if (lastError.kind !== "model_unavailable") throw lastError;
+      // Free-tier quotas are per model, so a rate-limited model can still fall back to the other one.
+      if (!["model_unavailable", "unavailable", "rate_limit"].includes(lastError.kind)) throw lastError;
     }
   }
   throw lastError ?? new AiProviderError("model_unavailable", "No AI model is configured");

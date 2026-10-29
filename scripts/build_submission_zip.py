@@ -19,6 +19,23 @@ EXCLUDED_DIRS = {"node_modules", "dist", "uploads", "coverage", ".vite", ".tmp",
 SECRET_PATTERNS = [re.compile(rb"AIza[0-9A-Za-z_\-]{30,}"), re.compile(rb"sk-ant-[0-9A-Za-z_\-]{20,}")]
 
 
+def local_secret_values() -> list[bytes]:
+    """Actual secret values from the local .env files, so keys in any format are caught."""
+    values = []
+    for env_file in (os.path.join(ROOT, ".env"), os.path.join(ROOT, "Backend", ".env")):
+        if not os.path.exists(env_file):
+            continue
+        for line in open(env_file, encoding="utf8"):
+            key, _, value = line.strip().partition("=")
+            value = value.strip().strip("\"'")
+            if re.search(r"(API_KEY|SECRET|PASSWORD|TOKEN)$", key) and len(value) >= 12:
+                values.append(value.encode())
+    return values
+
+
+LOCAL_SECRETS = local_secret_values()
+
+
 def excluded(name: str) -> bool:
     if name == ".env" or (name.startswith(".env.") and name != ".env.example"):
         return True
@@ -28,9 +45,8 @@ def excluded(name: str) -> bool:
 def check_secret(path: str) -> None:
     with open(path, "rb") as handle:
         data = handle.read()
-    for pattern in SECRET_PATTERNS:
-        if pattern.search(data):
-            raise SystemExit(f"Refusing to package {path}: it looks like it contains an API key")
+    if any(pattern.search(data) for pattern in SECRET_PATTERNS) or any(secret in data for secret in LOCAL_SECRETS):
+        raise SystemExit(f"Refusing to package {path}: it contains an API key or secret")
 
 
 def main() -> None:
