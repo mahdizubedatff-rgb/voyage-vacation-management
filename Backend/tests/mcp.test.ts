@@ -185,7 +185,7 @@ describe("POST /api/mcp/ask (AI mode: mocked Gemini picks tools, real MCP execut
     expect(res.status).toBe(200);
     expect(res.body.data).toMatchObject({
       mode: "ai",
-      model: "gemini-3.6-flash",
+      model: "gemini-3.1-flash-lite",
       answer: "Paris and Rome are our European trips.",
       toolCalls: [{ tool: "get_vacations_by_region", arguments: { region: "Europe" } }],
     });

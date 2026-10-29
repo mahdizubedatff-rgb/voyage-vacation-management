@@ -14,8 +14,8 @@ export default defineConfig({
       JWT_SECRET: "test-secret-please-change-0123456789",
       UPLOADS_DIR: path.join(os.tmpdir(), "voyage-test-uploads"),
       GEMINI_API_KEY: "",
-      GEMINI_MODEL: "gemini-3.6-flash",
-      GEMINI_FALLBACK_MODEL: "gemini-3.1-flash-lite",
+      GEMINI_MODEL: "gemini-3.1-flash-lite",
+      GEMINI_FALLBACK_MODEL: "gemini-3.6-flash",
     },
   },
 });

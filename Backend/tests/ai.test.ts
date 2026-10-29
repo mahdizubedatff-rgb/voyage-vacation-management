@@ -103,8 +103,8 @@ describe("GeminiRecommendationProvider (mocked Gemini SDK responses)", () => {
   it("requests JSON output with a schema and parses the response", async () => {
     const calls = fakeGemini([jsonResponse({ isRecognizedDestination: true, ...MOCK })]);
     const result = await new GeminiRecommendationProvider().recommend("Kyoto");
-    expect(result).toEqual({ recommendation: MOCK, model: "gemini-3.6-flash" });
-    expect(calls[0]?.model).toBe("gemini-3.6-flash");
+    expect(result).toEqual({ recommendation: MOCK, model: "gemini-3.1-flash-lite" });
+    expect(calls[0]?.model).toBe("gemini-3.1-flash-lite");
     expect(calls[0]?.config?.responseMimeType).toBe("application/json");
     expect(JSON.stringify(calls[0]?.config?.responseJsonSchema)).toContain("itinerary");
     expect(JSON.stringify(calls[0]?.config?.responseJsonSchema)).not.toContain("$schema");
@@ -117,12 +117,12 @@ describe("GeminiRecommendationProvider (mocked Gemini SDK responses)", () => {
 
   it("falls back to GEMINI_FALLBACK_MODEL when the primary model is unavailable", async () => {
     const calls = fakeGemini([
-      new ApiError({ message: "models/gemini-3.6-flash is not found", status: 404 }),
+      new ApiError({ message: "models/gemini-3.1-flash-lite is not found", status: 404 }),
       jsonResponse({ isRecognizedDestination: true, ...MOCK }),
     ]);
     const result = await new GeminiRecommendationProvider().recommend("Kyoto");
-    expect(calls.map((call) => call.model)).toEqual(["gemini-3.6-flash", "gemini-3.1-flash-lite"]);
-    expect(result.model).toBe("gemini-3.1-flash-lite");
+    expect(calls.map((call) => call.model)).toEqual(["gemini-3.1-flash-lite", "gemini-3.6-flash"]);
+    expect(result.model).toBe("gemini-3.6-flash");
   });
 
   it("falls back when the primary model times out on Google's side (504)", async () => {
@@ -131,8 +131,8 @@ describe("GeminiRecommendationProvider (mocked Gemini SDK responses)", () => {
       jsonResponse({ isRecognizedDestination: true, ...MOCK }),
     ]);
     const result = await new GeminiRecommendationProvider().recommend("Kyoto");
-    expect(calls.map((call) => call.model)).toEqual(["gemini-3.6-flash", "gemini-3.1-flash-lite"]);
-    expect(result.model).toBe("gemini-3.1-flash-lite");
+    expect(calls.map((call) => call.model)).toEqual(["gemini-3.1-flash-lite", "gemini-3.6-flash"]);
+    expect(result.model).toBe("gemini-3.6-flash");
   });
 
   it("falls back on a per-model rate limit and reports 429 when both models are exhausted", async () => {
@@ -141,7 +141,7 @@ describe("GeminiRecommendationProvider (mocked Gemini SDK responses)", () => {
       new ApiError({ message: "Resource exhausted", status: 429 }),
     ]);
     await expect(new GeminiRecommendationProvider().recommend("Kyoto")).rejects.toMatchObject({ kind: "rate_limit" });
-    expect(calls.map((call) => call.model)).toEqual(["gemini-3.6-flash", "gemini-3.1-flash-lite"]);
+    expect(calls.map((call) => call.model)).toEqual(["gemini-3.1-flash-lite", "gemini-3.6-flash"]);
   });
 
   it("does not try other models when the key is rejected", async () => {

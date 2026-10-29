@@ -18,8 +18,8 @@ const envSchema = z.object({
   GEMINI_API_KEY: z.string().optional(),
   // Free-tier eligible models (ai.google.dev/gemini-api/docs/pricing). The fallback is tried
   // when the primary model is unavailable, overloaded or timing out; leave it empty to disable.
-  GEMINI_MODEL: z.string().min(1).default("gemini-3.6-flash"),
-  GEMINI_FALLBACK_MODEL: z.string().default("gemini-3.1-flash-lite"),
+  GEMINI_MODEL: z.string().min(1).default("gemini-3.1-flash-lite"),
+  GEMINI_FALLBACK_MODEL: z.string().default("gemini-3.6-flash"),
   AI_TIMEOUT_MS: z.coerce.number().int().positive().default(45_000),
 
   MCP_SERVER_URL: z.string().default("http://localhost:4001/mcp"),

@@ -191,8 +191,8 @@ Defined in [`.env.example`](.env.example). Never commit real `.env` files.
 | `MCP_PORT` | `4001` | MCP server port |
 | `AI_PROVIDER` | `gemini` | `gemini` or `none` |
 | `GEMINI_API_KEY` | empty | Enables live AI. Backend only, never sent to the browser or logged |
-| `GEMINI_MODEL` | `gemini-3.6-flash` | Primary Gemini model (free tier) |
-| `GEMINI_FALLBACK_MODEL` | `gemini-3.1-flash-lite` | Used if the primary model is unavailable, overloaded or times out; empty disables |
+| `GEMINI_MODEL` | `gemini-3.1-flash-lite` | Primary Gemini model (free tier) |
+| `GEMINI_FALLBACK_MODEL` | `gemini-3.6-flash` | Used if the primary model is unavailable, overloaded or times out; empty disables |
 | `AI_TIMEOUT_MS` | `45000` | Per-request timeout for Gemini calls |
 | `SEED_ADMIN_PASSWORD` / `SEED_USER_PASSWORD` | `Admin1234` / `User1234` | Seed account passwords (development only) |
 
@@ -265,7 +265,7 @@ Status codes: `400` validation, `401` unauthenticated, `403` wrong role, `404` n
 ## AI configuration
 
 - Provider: **Google Gemini** through the official `@google/genai` SDK, called only from the backend (`src/services/ai/`). The key is read from `GEMINI_API_KEY`, is never sent to the browser, and never appears in error messages or logs.
-- Model: `GEMINI_MODEL` (default `gemini-3.6-flash`, on the Gemini API free tier). If that model is unavailable for your key, overloaded (503) or times out (504), the backend retries once with `GEMINI_FALLBACK_MODEL` (default `gemini-3.1-flash-lite`). The response shows which model answered. Both defaults were checked live against a new free-tier key on 2026-10-29. `gemini-3.8-flash` timed out (504) on every attempt and `gemini-2.5-flash` is closed to new users, so neither is a default.
+- Model: `GEMINI_MODEL` (default `gemini-3.1-flash-lite`, on the Gemini API free tier). If that model is unavailable for your key, rate-limited, overloaded (503) or times out (504), the backend retries once with `GEMINI_FALLBACK_MODEL` (default `gemini-3.6-flash`). The response shows which model answered. Both models were checked live against a new free-tier key on 2026-10-29. `gemini-3.8-flash` timed out (504) on every attempt and `gemini-2.5-flash` is closed to new users, so neither is a default. Flash-Lite is the primary because it answered fastest (about 1–6 s) and kept serving requests after `gemini-3.6-flash` hit its free-tier cap of 20 requests per day.
 - Getting a key: create one at [Google AI Studio](https://aistudio.google.com/apikey), put it in `.env` (Docker) or `Backend/.env` (local), and restart the backend (`docker compose up -d`).
 - Recommendations use Gemini **structured output** (`responseMimeType: application/json` plus a JSON Schema generated from the Zod schema). The answer is validated again with Zod: overview, best time to visit, attractions, activities, itinerary and tips. Non-destinations are rejected with `422`.
 - Error handling (each request has an `AI_TIMEOUT_MS` timeout):
@@ -276,7 +276,7 @@ Status codes: `400` validation, `401` unauthenticated, `403` wrong role, `404` n
   - Timeout, network or provider outage → `503`.
   - Invalid, truncated or schema-mismatched output → `502`.
   - Blocked by safety filters → `422`.
-- Free-tier limits: Google's free tier allows about **5 requests per minute per model** for `gemini-3.6-flash`, and a question can take 2–3 requests. Quotas are per model, so a rate-limited primary falls back to `GEMINI_FALLBACK_MODEL`.
+- Free-tier limits: Google caps free-tier usage **per model**. `gemini-3.6-flash` allowed 5 requests per minute and 20 per day on the test key, and an Ask Voyage question can use 2–3 requests. Because quotas are per model, a rate-limited primary falls back to the other model.
 - Automated tests use **mocked Gemini SDK responses** (`tests/ai.test.ts`, plus the AI-mode tests in `tests/mcp.test.ts`).
 - **Live verification (2026-10-29, free-tier key, Docker stack):**
   - AI recommendations returned real, structured itineraries for Kyoto, Lisbon and Cape Town, and rejected nonsense input with `422`.
